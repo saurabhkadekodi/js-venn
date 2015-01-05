@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.8.9.custom.min.js"></script>
+        <script type="text/javascript" src="js/raphael.js"></script>
+        <script type="text/javascript" src="js/raphael.draggable.js"></script>
+        <title></title>
+        <script>
+
+        var set1 = [10,22,34,64,35,23,54,56,77];
+        var set2 = [13,34,56,74,95,23];
+
+        window.onload = function () {
+            var paper = Raphael("canvas", 800, 500);
+            paper.draggable.enable();
+            try {
+                var circle1 = paper.circle(320, 240, set1.length*10).animate({fill: "#000000", opacity:"0.5"}, 2000).draggable.enable();
+                var circle2 = paper.circle(500, 240, set2.length*10).animate({fill: "#232443", opacity:"0.5"}, 2000).draggable.enable();
+                circle1.node.id = "circle1";
+                circle2.node.id = "circle2";
+                circle1.node.onclick = function(e){
+                };
+                circle2.node.onclick = function(e){                    
+                };
+            } catch (e) {
+                alert(e.message || e);
+            }
+        };
+        $("*", document.body).dblclick(function (e) {
+            var circle1 = $('#circle1');
+            var circle2 = $('#circle2');
+            var c1x_left = $('#canvas').offset().left+circle1[0].cx.animVal.value;
+            var c1x_top = $('#canvas').offset().top+circle1[0].cy.animVal.value;
+            var c2x_left = $('#canvas').offset().left+circle2[0].cx.animVal.value;
+            var c2x_top = $('#canvas').offset().top+circle2[0].cy.animVal.value;
+            var x = e.pageX - $(this).offset().left;
+            var y = e.pageY - $(this).offset().top;
+
+            var dist1 = Math.sqrt(((c1x_left - x)*(c1x_left - x))+((c1x_top - y)*(c1x_top - y)));
+            var dist2 = Math.sqrt(((c2x_left - x)*(c2x_left - x))+((c2x_top - y)*(c2x_top - y)));
+
+            var r1 = circle1[0].r.animVal.value;
+            var r2 = circle2[0].r.animVal.value;
+
+            if(dist1 <= r1 && dist2 <= r2)
+            {
+                alert("INTERSECTION="+getSetIntersection(set1, set2));
+            }
+            else if(dist1 <= r1 && dist2 > r2)
+            {
+                alert("SET 1="+set1);
+            }
+            else if(dist1 > r1 && dist2 <= r2)
+            {
+                alert("SET 2="+set2);
+            }
+
+            //alert("x="+x+"; y="+y+"; from circle1="+dist1+"; from circle2="+dist2+"; r1="+r1+"; r2="+r2);
+        });
+
+        function getSetIntersection(aSet1, aSet2) {
+            var temp = [];
+            var offset = arguments.length - 1;
+            var response = [];
+            for (var i = 0; i < arguments.length; i++) {
+            temp = temp.concat(arguments[i]);
+            }
+            temp.sort();
+            /*
+            * The goal is to find an ordered sequence of n identical members of temp,
+            * where n = arguments.length. For this, we just need to check the start
+            * and end points of the sequence, and if they match, push them on to the
+            * response array.
+            */
+
+            for (var i = 0; i < temp.length - offset; i++) {
+                if (temp[i] == temp[i + offset]) {
+                    response.push(temp[i]);
+                    i += offset;
+                }
+            }
+
+            return response;
+        }
+        </script>
+    </head>
+    <body>
+        <div id="canvas" style="background-color: lightgrey"></div>
+        <div id="entry">
+            Double click on the circle's to find out their respective set contents. Then drag them such that they intersect each other. Now double click the area of intersection to get the intersection of the 2 sets.
+        </div>
+    </body>
+</html>
